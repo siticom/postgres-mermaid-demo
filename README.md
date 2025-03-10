@@ -1,5 +1,11 @@
 # Mermaid Postgres Demo
 
+This repository contains a demo how to create a diagram of the tables in PostgreSQL database using continuous integration.
+
+![DB schema SVG](https://siticom.github.io/postgres-mermaid-demo/db-schema.svg)
+
+## Local Setup
+
 ```shell
 docker compose up -d 
 

@@ -88,7 +88,7 @@ jobs:
       - name: Prepare SVG for Pages
         run: |
           mkdir -p public
-          mv result.svg public/index.svg  # Move and rename for direct access
+          mv result.svg public/db-schema.svg  # Move and rename for direct access
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
