@@ -1,0 +1,87 @@
+name: Generate and Publish Mermaid Diagram
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  POSTGRES_DB: demo
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  POSTGRES_HOST: localhost
+
+jobs:
+  create-mermaid-file:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgis/postgis:14-3.4
+        env:
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Wait for PostgreSQL
+        run: |
+          echo "Waiting for PostgreSQL to be ready..."
+          until pg_isready -h ${{ env.POSTGRES_HOST }} -U ${{ env.POSTGRES_USER }}; do sleep 1; done
+          echo "PostgreSQL is ready!"
+
+      - name: Ingest SQL files
+        run: |
+          cat postgres/docker-entrypoint-initdb.d/01_setup.sql | psql
+        env:
+          PGHOST: ${{ env.POSTGRES_HOST }}
+          PGUSER: ${{ env.POSTGRES_USER }}
+          PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          PGDATABASE: ${{ env.POSTGRES_DB }}
+
+      - name: Install mermerd
+        run: |
+          go install github.com/KarnerTh/mermerd@latest
+
+      - name: Generate Mermaid file
+        run: |
+          ~/go/bin/mermerd \
+            -c "postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@${{ env.POSTGRES_HOST }}:5432/${{ env.POSTGRES_DB }}" \
+            --schema public \
+            --showAllConstraints \
+            --ignoreTables spatial_ref_sys \
+            --useAllTables
+
+      - name: Generate SVG from Mermaid
+        uses: docker://minlag/mermaid-cli:10.9.1
+        with:
+          entrypoint: /bin/sh
+          args: |
+            -c "/home/mermaidcli/node_modules/.bin/mmdc -p /puppeteer-config.json --input result.mmd --theme forest --output result.svg"
+
+      - name: Prepare SVG for Pages
+        run: |
+          mkdir -p public
+          mv result.svg public/index.svg  # Move and rename for direct access
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "public"
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
