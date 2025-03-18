@@ -1,10 +1,6 @@
 # Mermaid Postgres Demo
 
-This repository shows how to dynamically create an ER-diagram from a PostgreSQL database using mermerd. The diagram below is created automatically by the CI from the SQL files in [postgres/docker-entrypoint-initdb.d/01_setup.sql](postgres/docker-entrypoint-initdb.d/01_setup.sql).
-
-![DB schema SVG](https://siticom.github.io/postgres-mermaid-demo/db-schema.svg)
-
-See the respective [talk on the FOSSGIS conference](https://pretalx.com/fossgis2025/talk/H33WMC/) (German language).
+This repository shows how to dynamically create an ER-diagram from a PostgreSQL database using mermerd. The diagram published automatically by the CI from the SQL files in [postgres/docker-entrypoint-initdb.d/01_setup.sql](postgres/docker-entrypoint-initdb.d/01_setup.sql) to this URL <https://siticom.github.io/postgres-mermaid-demo/db-schema.svg>. See the respective [talk on the FOSSGIS conference](https://pretalx.com/fossgis2025/talk/H33WMC/) (German language).
 
 ## Explanation
 
