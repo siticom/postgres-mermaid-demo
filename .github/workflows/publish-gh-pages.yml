@@ -85,9 +85,17 @@ jobs:
           args: |
             -c "/home/mermaidcli/node_modules/.bin/mmdc -p /puppeteer-config.json --input result.mmd --theme forest --output result.svg"
 
-      - name: Prepare SVG for Pages
+      - name: Generate PNG from Mermaid
+        uses: docker://minlag/mermaid-cli:10.9.1
+        with:
+          entrypoint: /bin/sh
+          args: |
+            -c "/home/mermaidcli/node_modules/.bin/mmdc -p /puppeteer-config.json --input result.mmd --theme forest --output result.png"
+
+      - name: Prepare content for Pages
         run: |
           mkdir -p public
+          mv result.png public/db-schema.png  
           mv result.svg public/db-schema.svg  
           mv result.mmd public/db-schema.mmd
 
