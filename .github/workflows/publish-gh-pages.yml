@@ -84,13 +84,13 @@ jobs:
           entrypoint: /bin/sh
           args: |
             -c "/home/mermaidcli/node_modules/.bin/mmdc -p /puppeteer-config.json --input result.mmd --theme forest --output result.svg"
-
+    
       - name: Generate PNG from Mermaid
         uses: docker://minlag/mermaid-cli:10.9.1
         with:
           entrypoint: /bin/sh
           args: |
-            -c "/home/mermaidcli/node_modules/.bin/mmdc -p /puppeteer-config.json --input result.mmd --theme forest --output result.png"
+            -c "/home/mermaidcli/node_modules/.bin/mmdc -p /puppeteer-config.json --input result.mmd --theme forest --width 2400 --height 1600 --backgroundColor transparent --output result.png"
 
       - name: Prepare content for Pages
         run: |
